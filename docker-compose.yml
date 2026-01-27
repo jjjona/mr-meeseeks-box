@@ -1,0 +1,16 @@
+services:
+  meeseeks:
+    build:
+      context: .devcontainer
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspaces/mr-meeseeks-box
+      - claude-data:/home/vscode/.claude
+    working_dir: /workspaces/mr-meeseeks-box
+    user: vscode
+    command: sleep infinity
+    env_file:
+      - .env
+
+volumes:
+  claude-data:

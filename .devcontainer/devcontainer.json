@@ -1,0 +1,13 @@
+{
+  "name": "Mr. Meeseeks Box",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "meeseeks",
+  "workspaceFolder": "/workspaces/mr-meeseeks-box",
+  "remoteUser": "vscode",
+  "postCreateCommand": "/usr/local/bin/setup-claude.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  }
+}
