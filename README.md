@@ -45,8 +45,6 @@ CLAUDE_SETTINGS_PATH=~/.claude/settings.json
 CLAUDE_MCP_PATH=~/.claude/mcp.json
 ```
 
-If these files don't exist on your host, they will be created automatically. If you don't set these variables, Claude Code will use its defaults inside the container (lost on rebuild).
-
 ### OpenCode
 
 Run `opencode` and follow the prompts to authenticate with your provider.
@@ -56,8 +54,6 @@ Run `opencode` and follow the prompts to authenticate with your provider.
 OPENCODE_CONFIG_PATH=~/.config/opencode
 OPENCODE_DATA_PATH=~/.local/share/opencode
 ```
-
-If you haven't used OpenCode before, these directories will be created automatically.
 
 ### Codex CLI
 
@@ -145,9 +141,3 @@ OPENCODE_DATA_PATH=~/.local/share/opencode
 # Codex
 CODEX_PATH=~/.codex
 ```
-
-## Optimizations
-
-- Universe repository disabled to speed up builds on ARM (all packages are in main)
-- Node.js only installed when `ENABLE_CODEX=true` to minimize build time and image size
-- Build cache leveraged for faster rebuilds
