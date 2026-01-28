@@ -1,4 +1,5 @@
-FROM ubuntu:22.04
+# Use Microsoft's devcontainer base - includes git, curl, zsh, locales, sudo, etc.
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
 # ── Build arguments (opt-in via env vars) ──────────────────────────
 ARG ENABLE_CLAUDE_CODE=false
@@ -10,29 +11,15 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 ENV IN_DOCKER=1
-ENV DEBIAN_FRONTEND=noninteractive
 
-# ── Install base packages ──────────────────────────────────────────
-# Disable universe repo to speed up apt-get update on ARM (all our packages are in main)
-RUN sed -i 's/^deb \(.*\) universe$/# deb \1 universe/' /etc/apt/sources.list && \
-  apt-get update && apt-get install -y \
-  curl \
-  git \
-  zsh \
-  locales \
-  gnupg \
-  ca-certificates \
-  sudo \
-  && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# ── Set up locales ─────────────────────────────────────────────────
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
-
-# ── Create non-root user ───────────────────────────────────────────
-RUN groupadd --gid $USER_GID $USERNAME \
-  && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/zsh \
-  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-  && chmod 0440 /etc/sudoers.d/$USERNAME
+# ── Create meeseeks user (replacing default vscode user) ────────────
+RUN userdel -r vscode 2>/dev/null || true && \
+  groupadd --gid $USER_GID $USERNAME && \
+  useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/zsh && \
+  echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+  chmod 0440 /etc/sudoers.d/$USERNAME && \
+  mkdir -p /home/$USERNAME/.config && \
+  chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # ── Install Node.js (only if Codex CLI is enabled) ─────────────────
 RUN if [ "$ENABLE_CODEX" = "true" ]; then \
@@ -45,7 +32,6 @@ RUN if [ "$ENABLE_CODEX" = "true" ]; then \
   fi
 
 # ── Install Claude Code (opt-in via ENABLE_CLAUDE_CODE=true) ───────
-# Uses native installer (recommended) - auto-updates in background
 ENV PATH="/home/${USERNAME}/.local/bin:/home/${USERNAME}/.opencode/bin:$PATH"
 USER $USERNAME
 RUN if [ "$ENABLE_CLAUDE_CODE" = "true" ]; then \
