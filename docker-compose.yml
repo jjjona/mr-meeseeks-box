@@ -3,14 +3,35 @@ services:
     build:
       context: .devcontainer
       dockerfile: Dockerfile
+      args:
+        ENABLE_CLAUDE_CODE: ${ENABLE_CLAUDE_CODE:-false}
+        ENABLE_OPENCODE: ${ENABLE_OPENCODE:-false}
+        ENABLE_CODEX: ${ENABLE_CODEX:-false}
+    working_dir: /mr-meeseeks-box
     volumes:
-      - .:/workspaces/mr-meeseeks-box
-      - claude-data:/home/vscode/.claude
-    working_dir: /workspaces/mr-meeseeks-box
-    user: vscode
-    command: sleep infinity
+      - .:/mr-meeseeks-box
+      # Git and SSH (required)
+      - ${SSH_PATH:-~/.ssh}:/home/meeseeks/.ssh:ro
+      - ${GITCONFIG_PATH:-~/.gitconfig}:/home/meeseeks/.gitconfig:ro
+      # Zsh config (optional - use /dev/null to skip)
+      - ${ZSHRC_PATH:-/dev/null}:/home/meeseeks/.zshrc
+      # Claude Code (auth in volume, settings mounted to staging dir then symlinked)
+      - claude-data:/home/meeseeks/.claude
+      - ${CLAUDE_SETTINGS_PATH:-/dev/null}:/tmp/claude-host/settings.json
+      - ${CLAUDE_MCP_PATH:-/dev/null}:/tmp/claude-host/mcp.json
+      # OpenCode data (optional)
+      - ${OPENCODE_CONFIG_PATH:-/dev/null}:/home/meeseeks/.config/opencode
+      - ${OPENCODE_DATA_PATH:-/dev/null}:/home/meeseeks/.local/share/opencode
+      # Codex data (optional)
+      - ${CODEX_PATH:-/dev/null}:/home/meeseeks/.codex
+    stdin_open: true
+    tty: true
+    command: zsh
     env_file:
-      - .env
+      - path: .env
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   claude-data:
