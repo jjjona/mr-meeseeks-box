@@ -21,6 +21,3 @@ venv/
 
 # Docker
 .docker/
-
-# Claude Code persistent data (managed per-user)
-.claude-container/
