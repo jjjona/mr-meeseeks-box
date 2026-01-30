@@ -1,0 +1,16 @@
+Study this codebase.
+
+Your task is to reverse-engineer specifications.
+
+For each major feature/module:
+
+1. Identify what it does (inputs, outputs, side effects)
+2. Document business rules and constraints
+3. Note external dependencies and integrations
+4. Write a specification file in 00-docs/specs/[module-name].md
+
+Use up to 60 parallel subagents to analyze different parts of the system.
+
+DO NOT copy implementation details. Focus on observable behavior and requirements.
+When complete, create an index at specs/README.md listing all modules.
+Don't use the research-rpi skill!
